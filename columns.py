@@ -28,10 +28,12 @@ marks = [0, 10, 20, 50, 100, 200, 500, 1000]
 colorscale = ['#FFEDA0', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#BD0026', '#800026']
 
 def get_style(feature):
+    print ("get_style ran")
     color = [colorscale[i] for i, item in enumerate(marks) if feature["properties"]["Footfall"] > item][-1] #area_hectares
     return dict(fillColor=color, weight=2, opacity=1, color='white', dashArray='3', fillOpacity=0.7)
 
 def get_info(feature=None):
+    print ("get_info ran")
     header = [html.H4("London")]
     if not feature:
         return header + ["Hoover over map"]
@@ -68,20 +70,9 @@ app.layout = html.Div(
                     ),
 
                 html.Div(id='radio_output')
-
-
-
-                #html.Div(id='radio_output', style={"margin-left":"15px"}), #html.Div
-
                 ], className= 'six columns'
                 ),
-
-                html.Div([
-                    dl.Map(children=[dl.TileLayer(), geojson, info], center=[51.51, -0.083], zoom=12)
-                ],
-                    style={'width': '95%', 'height': '75vh', 'margin': "auto", "display": "block"}, id="map",
-                    className= 'six columns'
-                )
+                html.Div([],id="map"),
             ], className="row"
         )
     ], className='ten columns offset-by-one')
@@ -93,18 +84,17 @@ app.layout = html.Div(
 def update_radio(input_value):
 
     if input_value == "Total_Sales":
-        return [dcc.Graph(
-                            id='radio_output',
-                            figure={
-                                'data': [
-                                    {'x': [1, 2, 3, 4, 5], 'y': [9, 6, 2, 1, 5], 'type': 'line', 'name': 'Boats'},
-                                    {'x': [1, 2, 3, 4, 5], 'y': [8, 7, 2, 7, 3], 'type': 'bar', 'name': 'Cars'},
-                                ],
-                                'layout': {
-                                    'title': 'Basic Dash Example'
-                                }
-                            }
-                        )]
+
+        print (data["properties"]) # for some reason this wont print wtf?! krishan
+
+        #color = [colorscale[i] for i, item in enumerate(marks) if data["properties"]["Footfall"] > item][-1]  # area_hectares
+
+        return html.Div([
+                    dl.Map(children=[dl.TileLayer(), geojson, info], center=[51.51, -0.083], zoom=12)
+                ],
+                    style={'width': '95%', 'height': '75vh', 'margin': "auto", "display": "block"}, id="map",
+                    className= 'six columns'
+                )
     else:
 
         return [html.Div(id='radio_output', style={"margin-left":"15px"})]
