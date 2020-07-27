@@ -8,6 +8,7 @@ from dash_leaflet import express as dlx
 import dash_leaflet as dl
 import dash_auth
 from dash.dependencies import Output, Input
+from datetime import datetime as dt
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
@@ -21,13 +22,13 @@ auth = dash_auth.BasicAuth(
     VALID_USERNAME_PASSWORD_PAIRS
 )
 
-with open("new_london_p.json", 'r') as f: #london_p_footfall_sales.json, london_p.json
+with open("new_london_p.json", 'r') as f:
     data = json.load(f)
 marks = [0, 10, 20, 50, 100, 200, 500, 1000]
 colorscale = ['#FFEDA0', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#BD0026', '#800026']
 
 app.layout = html.Div(
-    html.Div([
+    html.Div([dbc.Row(dbc.Col(
         html.Div(
             [
                 html.Img(
@@ -47,16 +48,17 @@ app.layout = html.Div(
                         className='nine columns',
                         style={"margin-left":"15px"}),
             ], className="row"
-        ),
+        ))),
 
         html.Div(
-            [
-            html.Div([
-                dcc.Slider(
-                    min=0,
-                    max=9,
-                    marks={i: 'Label {}'.format(i) if i == 1 else str(i) for i in range(1, 6)},
-                    value=5,
+            dbc.Row([
+            html.Div(dbc.Col([
+                dcc.DatePickerRange(
+                    id='date-picker-range',
+                    start_date=dt(2020, 4, 1),
+                    end_date_placeholder_text='Select date',
+                    display_format='YYYY/MM/DD',
+                    style={"margin-left":"15px"}
                 ),
 
                 dcc.RadioItems(
@@ -73,7 +75,6 @@ app.layout = html.Div(
                         value='footfall',
                         style={"margin-left":"15px"},
                     ),
-                html.Div(id='radio_output', style={"margin-left":"7px"}),
 
                 dcc.Dropdown(
                     options=[
@@ -83,19 +84,52 @@ app.layout = html.Div(
                         {'label': 'Cyclists', 'value': 'Cyclists'},
                         {'label': 'Truck Drivers', 'value': 'Truck_Drivers'},
                     ],
-                    value=['Pedestrians', 'Drivers','Motorcyclists','Cyclists','Truck Drivers'],
+                    value=['Pedestrians', 'Drivers', 'Motorcyclists', 'Cyclists', 'Truck Drivers'],
                     multi=True,
-                    style={"margin-left":"7px"}
+                    style={"margin-left": "7px"},
+                    placeholder="Select footfall type",
                 ),
 
-                ], className= 'six columns'
+                dcc.Dropdown(
+                    options=[
+                        {'label': 'E6', 'value': 'E6'},
+                        {'label': 'W12', 'value': 'W12'},
+                    ],
+                    value=[],
+                    multi=True,
+                    style={"margin-left": "7px"},
+                    placeholder="Select postcode",
                 ),
-                html.Div([], id="map"),
-                html.Div([], id="info")
-            ], className="row"
+
+                html.Div(id='radio_output', style={"margin-left":"7px"}),
+
+                ]), className= 'six columns'
+                ),
+                html.Div(dbc.Col([], id="map")),
+                html.Div(dbc.Col([], id="info"))
+            ]), className="row"
         )
-    ], className='ten columns offset-by-one')
+    ], )
 )
+
+@app.callback(
+    Output(component_id='radio_output', component_property='children'),
+    [Input(component_id='radioitems', component_property='value')])
+def update_radio(input_value):
+    if input_value != None:
+
+        def get_style(feature):
+            color = [colorscale[i] for i, item in enumerate(marks) if feature["properties"][input_value] > item][-1]
+            return dict(fillColor=color, weight=2, opacity=1, color='white', dashArray='3', fillOpacity=0.7)
+
+        options = dict(hoverStyle=dict(weight=5, color='#666', dashArray=''), zoomToBoundsOnClick=True)
+        geojson = dlx.geojson(data, id="geojson", defaultOptions=options, style=get_style)
+
+        return html.Div([
+                    dl.Map(children=[dl.TileLayer(), geojson], center=[51.51, -0.083], zoom=11)
+                ],
+                    style={'width': '95%', 'height': '75vh', 'margin': "auto", "display": "block"}, id="map"
+                )
 
 @app.callback([Output("info", "children")], [Input("geojson", "featureHover"), Input(component_id='radioitems', component_property='value')])
 def info_hover(feature, input_value):
@@ -117,27 +151,6 @@ def info_hover(feature, input_value):
         ],
         id="info")
     ]
-
-@app.callback(
-    Output(component_id='radio_output', component_property='children'),
-    [Input(component_id='radioitems', component_property='value')])
-def update_radio(input_value):
-
-    if input_value != None:
-
-        def get_style(feature):
-            color = [colorscale[i] for i, item in enumerate(marks) if feature["properties"][input_value] > item][-1]
-            return dict(fillColor=color, weight=2, opacity=1, color='white', dashArray='3', fillOpacity=0.7)
-
-        options = dict(hoverStyle=dict(weight=5, color='#666', dashArray=''), zoomToBoundsOnClick=True)
-        geojson = dlx.geojson(data, id="geojson", defaultOptions=options, style=get_style)
-
-        return html.Div([
-                    dl.Map(children=[dl.TileLayer(), geojson], center=[51.51, -0.083], zoom=11)
-                ],
-                    style={'width': '95%', 'height': '75vh', 'margin': "auto", "display": "block"}, id="map",
-                    className= 'six columns'
-                )
 
 if __name__ == '__main__':
     app.run_server(debug=True)
