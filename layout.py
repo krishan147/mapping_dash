@@ -1,7 +1,3 @@
-'links'
-# https://stackoverflow.com/questions/62475991/how-to-write-an-app-layout-in-dash-such-that-two-graphs-are-side-by-side
-# https://dash-bootstrap-components.opensource.faculty.ai/docs/components/layout/
-
 # -*- coding: utf-8 -*-
 import dash
 import dash_core_components as dcc
@@ -15,10 +11,10 @@ from dash.dependencies import Output, Input
 from datetime import datetime as dt
 
 
-#app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+# external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+# app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 #app = dash.Dash()
 
@@ -39,33 +35,11 @@ marks = [0, 10, 20, 50, 100, 200, 500, 1000]
 colorscale = ['#FFEDA0', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#BD0026', '#800026']
 
 
-# app.layout = html.Div(className='row', children=[
-#     html.H1("Tips database analysis (First dashboard)"),
-#     html.Div(children=[
-#         html.Div(dcc.Dropdown(
-#             id="radioitems",
-#             options=[
-#                 {'label': 'Footfall', 'value': 'Footfall'},
-#                 {'label': 'Total_Sales', 'value': 'Total_Sales'},
-#                 {'label': 'P&G_Sales', 'value': 'P&G_Sales'},
-#                 {'label': 'Unilever_Sales', 'value': 'uni_Sales'},
-#                 {'label': 'J&J_Sales', 'value': 'J&J_Sales'},
-#                 {'label': 'Supermarket Sales', 'value': 'Supermarket_Sales'},
-#                 {'label': 'Beauty Retailer Sales', 'value': 'Beauty_Retailer_Sales'},
-#                 {'label': 'No. of Supermarkets', 'value': 'No_of_Supermarkets'},
-#                 {'label': 'No. of Beauty Retailers', 'value': 'No_of_Beauty_Retailers'},
-#                 {'label': 'No. of Hairdressers', 'value': 'No_of_Hairdressers'},
-#             ],
-#             value='Footfall',
-#             style={'margin-left': '2px', 'width': '180%', 'margin-top': '2px','display': 'inline-block'},
-#         )),
-#         html.Div(dbc.Col([], id="map", style={'display': 'inline-block'}))
-#     ])
-# ])
-
+# app = dash.Dash()
+#app.css.append_css({'external_url': 'https://codepen.io/amyoshino/pen/jzXypZ.css'})  # noqa: E501
+# krishan this layout is going in the right direction
 app.layout = html.Div(
-    [
-        dbc.Row(dbc.Col(
+    html.Div([
         html.Div(
             [
                 html.Img(
@@ -73,22 +47,24 @@ app.layout = html.Div(
                     className='three columns',
                     style={
                         'height': '2%',
-                        'width': '5%',
+                        'width': '2%',
                         'float': 'left',
                         'position': 'relative',
                         'margin-top': 10,
                         'margin-left': 30,
-                        'margin-right': 1
+                        'margin-right': 10.5
                     },
                 ),
                 html.H1(children='Miss Marple (Demo)',
                         className='nine columns',
-                        style={"margin-left":"15px"}),
+                        style={"margin-left": "5px"}),
             ], className="row"
-        ))),
-        dbc.Row(
+        ),
+
+        html.Div(
             [
-                dbc.Col(html.Div(dcc.Dropdown(
+            html.Div([
+                dcc.Dropdown(
                         id = "radioitems",
                         options=[
                             {'label': 'Footfall', 'value': 'Footfall'},
@@ -103,21 +79,19 @@ app.layout = html.Div(
                             {'label': 'No. of Hairdressers', 'value': 'No_of_Hairdressers'},
                         ],
                         value='Footfall',
-                        style={"margin-left":"2px",'width': '180%','margin-top': "2px"},
-                    )), width="auto"),
+                        style={"margin-top":"10px", "margin-left":"10px", "margin-right":"20px", 'width': '250px'},
+                    )
+                ], className= 'six columns'
+                ),
 
-                html.Div(id='radio_output', style={"margin-left":"7px"}),
-
-                dbc.Col(html.Div([], id="map")),
-                dbc.Col(html.Div(dbc.Col([], id="info"))),
-            ],
-            no_gutters=True,
-        ),
-    ]
+                html.Div([
+                    dl.Map(dl.TileLayer(), style={'width': '1600px', 'height': '700px'}),
+                ], className= 'six columns'
+                )
+            ], className="row"
+        )
+    ], className='ten columns offset-by-one')
 )
-
-
-
 
 # app.layout = html.Div(
 #     html.Div([dbc.Row(dbc.Col(
@@ -129,7 +103,7 @@ app.layout = html.Div(
 #                     style={
 #                         'height': '2%',
 #                         'width': '2%',
-#                         'float': 'right',
+#                         'float': 'left',
 #                         'position': 'relative',
 #                         'margin-top': 10,
 #                         'margin-left': 30,
@@ -153,7 +127,7 @@ app.layout = html.Div(
 #                     style={"margin-left":"15px"}
 #                 ),
 #
-#                 dcc.RadioItems(
+#                 dcc.Dropdown(
 #                         id = "radioitems",
 #                         options=[
 #                             {'label': 'Footfall', 'value': 'Footfall'},
@@ -167,8 +141,8 @@ app.layout = html.Div(
 #                             {'label': 'No. of Beauty Retailers', 'value': 'No_of_Beauty_Retailers'},
 #                             {'label': 'No. of Hairdressers', 'value': 'No_of_Hairdressers'},
 #                         ],
-#                         value='footfall',
-#                         style={"margin-left":"15px"},
+#                         value='Footfall',
+#                         style={"margin-left":"7px"},
 #                     ),
 #
 #                 dcc.Dropdown(
@@ -203,8 +177,10 @@ app.layout = html.Div(
 #                 html.Div(dbc.Col([], id="map")),
 #                 html.Div(dbc.Col([], id="info"))
 #             ]), className="row"
-#         )
-#     ], )
+#         ),
+#         html.H1('thishtishtis'),
+#         ],
+#     )
 # )
 
 @app.callback(
@@ -215,7 +191,12 @@ def update_radio(input_value):
 
         print (input_value)
 
+
+
         def get_style(feature):
+
+            print (feature)
+
             color = [colorscale[i] for i, item in enumerate(marks) if feature["properties"][input_value] > item][-1]
             return dict(fillColor=color, weight=2, opacity=1, color='white', dashArray='3', fillOpacity=0.7)
 
@@ -228,11 +209,12 @@ def update_radio(input_value):
                     style={'width': '95%', 'height': '75vh', 'margin': "auto", "display": "block"}, id="map"
                 )
 
+        # return dl.Map(children=[dl.TileLayer(), geojson],id="map")
+
 @app.callback([Output("info", "children")], [Input("geojson", "featureHover"), Input(component_id='radioitems', component_property='value')])
 def info_hover(feature, input_value):
 
     print(input_value)
-    print (feature)
     figure = feature["properties"][input_value]
     postcode = feature["properties"]["Name"]
 
