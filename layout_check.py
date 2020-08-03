@@ -10,7 +10,14 @@ import dash_auth
 from dash.dependencies import Output, Input
 from datetime import datetime as dt
 
+
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+
+# external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+# app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+
+#app = dash.Dash()
+
 server = app.server
 
 VALID_USERNAME_PASSWORD_PAIRS = {
@@ -22,17 +29,38 @@ auth = dash_auth.BasicAuth(
     VALID_USERNAME_PASSWORD_PAIRS
 )
 
-# krishan. kinda working. slowly delete stuff and then move stuff...
-
 with open("new_london_p.json", 'r') as f:
     data = json.load(f)
 marks = [0, 10, 20, 50, 100, 200, 500, 1000]
 colorscale = ['#FFEDA0', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#BD0026', '#800026']
 
 app.layout = html.Div(
-    html.Div([
+    html.Div([dbc.Row(dbc.Col(
+        html.Div(
+            [
+                html.Img(
+                    src="https://ih1.redbubble.net/image.335413266.9826/flat,128x,075,f-pad,128x128,f8f8f8.u2.jpg",
+                    className='three columns',
+                    style={
+                        'height': '2%',
+                        'width': '2%',
+                        'float': 'left',
+                        'position': 'relative',
+                        'margin-top': 10,
+                        'margin-left': 30,
+                        'margin-right': 1
+                    },
+                ),
+                html.H1(children='Miss Marple (Demo)',
+                        className='nine columns',
+                        style={"margin-left":"15px"}),
+            ], className="row"
+        ))),
+
+        html.Div(
             dbc.Row([
             html.Div(dbc.Col([
+
                 dcc.Dropdown(
                         id = "radioitems",
                         options=[
@@ -57,7 +85,8 @@ app.layout = html.Div(
                 ),
                 html.Div(dbc.Col([], id="map")),
                 html.Div(dbc.Col([], id="info"))
-            ]),
+            ]), className="row"
+        ),
         html.H1('thishtishtis'),
         ],
     )
@@ -83,6 +112,8 @@ def update_radio(input_value):
                 ],
                     style={'width': '95%', 'height': '75vh', 'margin': "auto", "display": "block"}, id="map"
                 )
+
+        # return dl.Map(children=[dl.TileLayer(), geojson],id="map")
 
 @app.callback([Output("info", "children")], [Input("geojson", "featureHover"), Input(component_id='radioitems', component_property='value')])
 def info_hover(feature, input_value):
