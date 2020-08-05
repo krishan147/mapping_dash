@@ -10,6 +10,9 @@ import dash_auth
 from dash.dependencies import Output, Input
 from datetime import datetime as dt
 
+#https://dash-bootstrap-components.opensource.faculty.ai/docs/components/layout/
+# need to figure out columns!
+
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
@@ -28,28 +31,47 @@ marks = [0, 10, 20, 50, 100, 200, 500, 1000]
 colorscale = ['#FFEDA0', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#BD0026', '#800026']
 
 app.layout = html.Div(
-    [ dbc.Row([
-                dcc.Dropdown(
+    [
+        dbc.Row(
+            [
+                dbc.Col(html.Div(dcc.Dropdown(
                         id = "radioitems",
                         options=[
                             {'label': 'Footfall', 'value': 'Footfall'},
                             {'label': 'Total_Sales', 'value': 'Total_Sales'}
                         ],
                         value='Footfall',
-                        style={"margin-left":"7px"}),
-
-        html.H1("rewrwerwerwerrewrwerwerwer"),
-        html.H1("popopopopopopopopo"),
-
-        html.H1("qweqweqweqweqweqweqwe"),
-        html.Div(id="map"),
-        html.Div(id="info"),
-    ]),
-        html.Div(id='radio_output', style={"margin-left":"7px"}),
-
+                        style={"margin-left":"5px",'width': '68%'}))),
+                dbc.Col(html.Div("One of three columns")),
+                dbc.Col(html.Div("One of three columns")),
+            ],
+            align="start",
+        ),
+        dbc.Row(
+            [
+                dbc.Col(html.Div(id="map")),
+                dbc.Col(html.Div(id='radio_output', style={"margin-left":"7px"})),
+                dbc.Col(html.Div(id="info")),
+            ],
+            align="center",
+        ),
+        dbc.Row(
+            [
+                dbc.Col(html.Div("One of three columns")),
+                dbc.Col(html.Div("One of three columns")),
+                dbc.Col(html.Div("One of three columns")),
+            ],
+            align="end",
+        ),
+        dbc.Row(
+            [
+                dbc.Col(html.Div("One of three columns"), align="start"),
+                dbc.Col(html.Div("One of three columns"), align="center"),
+                dbc.Col(html.Div("One of three columns"), align="end"),
+            ]
+        ),
     ]
 )
-
 
 @app.callback(
     Output(component_id='radio_output', component_property='children'),
@@ -66,24 +88,16 @@ def update_radio(input_value):
         options = dict(hoverStyle=dict(weight=5, color='#666', dashArray=''), zoomToBoundsOnClick=True)
         geojson = dlx.geojson(data, id="geojson", defaultOptions=options, style=get_style)
 
-        # return html.Div([dbc.Row(html.Div([
-        #             dl.Map(children=[dl.TileLayer(), geojson], center=[51.51, -0.083], zoom=11)
-        #         ],
-        #             style={'width': '90%', 'height': '55vh','padding-left':'8%'}, id="map"
-        #         )
-        #
-        # )])
-
-        # return html.Div([dbc.Row(
-        #             dl.Map(children=[dl.TileLayer(), geojson], center=[51.51, -0.083], zoom=11),
-        #             style={'width': '90%', 'height': '55vh','padding-left':'8%'}, id="map"
-        # )])
-
         return html.Div([
                     dl.Map(children=[dl.TileLayer(), geojson], center=[51.51, -0.083], zoom=11)
                 ],
-                    style={'width': '90%', 'height': '55vh','padding-left':'8%'}, id="map"
+                    style={'width': '300%', 'height': '95vh'}, id="map"
                 )
+
+        # return html.Div([
+        #     dl.Map(children=[dl.TileLayer(), geojson], center=[51.51, -0.083], zoom=11)
+        # ],id="map"
+        # )
 
 
 @app.callback([Output("info", "children")], [Input("geojson", "featureHover"), Input(component_id='radioitems', component_property='value')])
@@ -93,8 +107,6 @@ def info_hover(feature, input_value):
     print("feature", feature) # this will only appear if you can hover on the map. therefore map isnt working properly...
     figure = feature["properties"][input_value]
     postcode = feature["properties"]["Name"]
-
-
 
     if "Total_Sales" == input_value or "Supermarket_Sales" == input_value:
         figure = "£" + str(feature["properties"][input_value])

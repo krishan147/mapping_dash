@@ -28,7 +28,7 @@ marks = [0, 10, 20, 50, 100, 200, 500, 1000]
 colorscale = ['#FFEDA0', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#BD0026', '#800026']
 
 app.layout = html.Div(
-    [ dbc.Row([
+    [dbc.Row([
                 dcc.Dropdown(
                         id = "radioitems",
                         options=[
@@ -39,17 +39,14 @@ app.layout = html.Div(
                         style={"margin-left":"7px"}),
 
         html.H1("rewrwerwerwerrewrwerwerwer"),
-        html.H1("popopopopopopopopo"),
 
-        html.H1("qweqweqweqweqweqweqwe"),
         html.Div(id="map"),
         html.Div(id="info"),
-    ]),
         html.Div(id='radio_output', style={"margin-left":"7px"}),
+    ]),
 
     ]
 )
-
 
 @app.callback(
     Output(component_id='radio_output', component_property='children'),
@@ -66,23 +63,10 @@ def update_radio(input_value):
         options = dict(hoverStyle=dict(weight=5, color='#666', dashArray=''), zoomToBoundsOnClick=True)
         geojson = dlx.geojson(data, id="geojson", defaultOptions=options, style=get_style)
 
-        # return html.Div([dbc.Row(html.Div([
-        #             dl.Map(children=[dl.TileLayer(), geojson], center=[51.51, -0.083], zoom=11)
-        #         ],
-        #             style={'width': '90%', 'height': '55vh','padding-left':'8%'}, id="map"
-        #         )
-        #
-        # )])
-
-        # return html.Div([dbc.Row(
-        #             dl.Map(children=[dl.TileLayer(), geojson], center=[51.51, -0.083], zoom=11),
-        #             style={'width': '90%', 'height': '55vh','padding-left':'8%'}, id="map"
-        # )])
-
         return html.Div([
                     dl.Map(children=[dl.TileLayer(), geojson], center=[51.51, -0.083], zoom=11)
                 ],
-                    style={'width': '90%', 'height': '55vh','padding-left':'8%'}, id="map"
+                    style={'width': '90%', 'height': '55vh','display': 'inline-block','margin':0}, id="map"
                 )
 
 
@@ -93,8 +77,6 @@ def info_hover(feature, input_value):
     print("feature", feature) # this will only appear if you can hover on the map. therefore map isnt working properly...
     figure = feature["properties"][input_value]
     postcode = feature["properties"]["Name"]
-
-
 
     if "Total_Sales" == input_value or "Supermarket_Sales" == input_value:
         figure = "£" + str(feature["properties"][input_value])
