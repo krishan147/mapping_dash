@@ -8,10 +8,8 @@ from dash_leaflet import express as dlx
 import dash_leaflet as dl
 import dash_auth
 from dash.dependencies import Output, Input
-from datetime import datetime as dt
-#https://dash-bootstrap-components.opensource.faculty.ai/docs/components/layout/
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
 VALID_USERNAME_PASSWORD_PAIRS = {
@@ -28,43 +26,45 @@ with open("new_london_p.json", 'r') as f:
 marks = [0, 10, 20, 50, 100, 200, 500, 1000]
 colorscale = ['#FFEDA0', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#BD0026', '#800026']
 
-app.layout = html.Div(
-    [
-        dbc.Row(
+
+app.layout = html.Div([html.Div([
+    dbc.Row(dbc.Col(html.Div(dbc.Alert(dbc.Col(
+        html.Div(
             [
-                dbc.Col(html.Div(dcc.Dropdown(
+                html.Img(
+                    src="https://ih1.redbubble.net/image.335413266.9826/flat,128x,075,f-pad,128x128,f8f8f8.u2.jpg",
+                    className='three columns',
+                    style={
+                        'height': '2%',
+                        'width': '2%',
+                        'float': 'right',
+                        'position': 'relative',
+                        'margin-top': 10,
+                        'margin-left': 30,
+                        'margin-right': 1
+                    },
+                ),
+                html.H1(children='Miss Marple (Demo)',
+                        className='nine columns',
+                        style={"margin-left":"15px"}),
+            ], className="row"
+        )), color="primary"))))
+    , dbc.Row([
+            dbc.Col(html.Div(dbc.Alert(dcc.Dropdown(
                         id = "radioitems",
                         options=[
                             {'label': 'Footfall', 'value': 'Footfall'},
                             {'label': 'Total_Sales', 'value': 'Total_Sales'}
                         ],
                         value='Footfall',
-                        style={"margin-left":"5px",'width': '68%'}))), #need to deecrease size for footfall node as this is causing the gap? style={"margin-left":"5px",'width': '68%'}
-                dbc.Col(html.Div(id="map"),width=-200),
-                dbc.Col(html.Div(id='radio_output', style={"margin-left":"7px"})),
-                dbc.Col(html.Div(id="info")),
-            ],
-            no_gutters=True,
-            align="start",
-        ),
-        dbc.Row(
-            [
-                dbc.Col(html.Div("this2")),
-                dbc.Col(html.Div("this3")),
-                dbc.Col(html.Div("this4")),
-            ],
-            align="center",
-        ),
-        dbc.Row(
-            [
-                dbc.Col(html.Div("this5")),
-                dbc.Col(html.Div("this6")),
-                dbc.Col(html.Div("this7")),
-            ],
-            align="end",
-        )
-    ]
-)
+                        style={"margin-left":"5px",'width': '115%'}), color="white")), width="auto")
+            , dbc.Col((html.Div(id="map")),width=-200)
+            , dbc.Col(html.Div(dbc.Alert((html.Div(id='radio_output', style={"margin-left":"7px"})), color="white")))
+            , dbc.Col(html.Div(dbc.Alert((html.Div(id="info")), color="white")))
+
+            ])
+
+        ])])
 
 @app.callback(
     Output(component_id='radio_output', component_property='children'),
@@ -119,3 +119,8 @@ def info_hover(feature, input_value):
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+
+
+
+if __name__ == "__main__":
+    app.run_server(debug = True)
