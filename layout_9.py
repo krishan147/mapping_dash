@@ -27,9 +27,9 @@ with open("new_london_p.json", 'r') as f:
 marks = [0, 10, 20, 50, 100, 200, 500, 1000]
 colorscale = ['#FFEDA0', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#BD0026', '#800026']
 
+app.layout = html.Div([
 
-app.layout = html.Div([html.Div([
-    dbc.Row(dbc.Col(html.Div(dbc.Alert(dbc.Col(
+dbc.Col(html.Div(dbc.Alert(dbc.Col(
         html.Div(
             [
                 html.Img(
@@ -49,8 +49,13 @@ app.layout = html.Div([html.Div([
                         className='nine columns',
                         style={"margin-left":"15px"}),
             ], className="row"
-        )), color="primary"))))
-    , dbc.Row([
+        )), color="primary"))),
+
+
+
+    dcc.Tabs([
+        dcc.Tab(label='Map', children=[html.Div([
+            dbc.Row([
             dbc.Col(html.Div(children = [
 
                 dbc.Alert(dcc.DatePickerRange(
@@ -59,7 +64,6 @@ app.layout = html.Div([html.Div([
                     end_date_placeholder_text='Select date',
                     display_format='YYYY/MM/DD',
                     style={"margin-left":"5px",'font_size': '10px','width': '105%'}), color="white"),
-
 
                 dbc.Alert(dcc.Dropdown(
                         id = "radioitems",
@@ -111,8 +115,38 @@ app.layout = html.Div([html.Div([
 
             ])
 
-        ])
+        ])]),
+
+        dcc.Tab(label='Overtime', children=[
+
+
+            dcc.Graph(
+                figure={
+                    'data': [
+                        {'x': [1, 2, 3], 'y': [1, 4, 1],
+                            'type': 'bar', 'name': 'SF'},
+                        {'x': [1, 2, 3], 'y': [1, 2, 3],
+                         'type': 'bar', 'name': u'Montréal'},
+                    ]
+                }
+            )
+        ]),
+
+        dcc.Tab(label='Other charts', children=[
+            dcc.Graph(
+                figure={
+                    'data': [
+                        {'x': [1, 2, 3], 'y': [2, 4, 3],
+                            'type': 'bar', 'name': 'SF'},
+                        {'x': [1, 2, 3], 'y': [5, 4, 3],
+                         'type': 'bar', 'name': u'Montréal'},
+                    ]
+                }
+            )
+        ]),
+    ])
 ])
+
 
 @app.callback(
     Output(component_id='radio_output', component_property='children'),
